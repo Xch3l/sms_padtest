@@ -1,0 +1,10 @@
+# ROM image, symbol and listing files
+*.sms
+*.sym
+*.lst
+
+# temporary files
+*.tmp
+
+# old builds created by batch files
+old/

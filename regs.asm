@@ -1,0 +1,194 @@
+; SMS Registers
+.DEFINE IO_MEMCTRL $3E ; [w] Memory control
+.DEFINE IO_IOCTRL  $3F ; [w] I/O Control
+.DEFINE IO_PSG     $7F ; [w] SN76489 PSG
+.DEFINE IO_VCOUNT  $7E ; [r] Current scanline
+.DEFINE IO_HCOUNT  $7F ; [r] TH Latched H position
+.DEFINE IO_VDPDATA $BE ; [rw]
+.DEFINE IO_VDPCTRL $BF ; [w]
+.DEFINE IO_VDPSTAT $BF ; [r] VDP Status
+.DEFINE IO_PORT1   $DC ; [r] Port 1
+.DEFINE IO_PORT2   $DD ; [r] Port 2
+
+; I/O Port $3E: Memory control
+.DEFINE EXPSLEN_BIT 7 ; Expansion Slot disable
+.DEFINE CARTSEN_BIT 6 ; Cartridge Slot disable
+.DEFINE CARDDIS_BIT 5 ; Card Slot disable
+.DEFINE WRAMDIS_BIT 4 ; Work RAM disable
+.DEFINE BIOSDIS_BIT 3 ; BIOS ROM disable
+.DEFINE IODIS_BIT   2 ; I/O chip disable
+
+.DEFINE EXPSLEN 1<<EXPSLEN_BIT
+.DEFINE CARTSEN 1<<CARTSEN_BIT
+.DEFINE CARDDIS 1<<CARDDIS_BIT
+.DEFINE WRAMDIS 1<<WRAMDIS_BIT
+.DEFINE BIOSDIS 1<<BIOSDIS_BIT
+.DEFINE IODIS   1<<IODIS_BIT
+
+; I/O Port $3F: I/O Control
+.DEFINE PORTB_THL_BIT 7 ; PortB TH pin output level
+.DEFINE PORTB_TRL_BIT 6 ; PortB TR pin output level
+.DEFINE PORTA_THL_BIT 5 ; PortA TH pin output level
+.DEFINE PORTA_TRL_BIT 4 ; PortA TR pin output level
+.DEFINE PORTB_THD_BIT 3 ; PortB TH pin mode (1=input, 0=output)
+.DEFINE PORTB_TRD_BIT 2 ; PortB TR pin mode (1=input, 0=output)
+.DEFINE PORTA_THD_BIT 1 ; PortA TH pin mode (1=input, 0=output)
+.DEFINE PORTA_TRD_BIT 0 ; PortA TR pin mode (1=input, 0=output)
+
+.DEFINE PORTB_THL 1<<PORTB_THL_BIT
+.DEFINE PORTB_TRL 1<<PORTB_TRL_BIT
+.DEFINE PORTA_THL 1<<PORTA_THL_BIT
+.DEFINE PORTA_TRL 1<<PORTA_TRL_BIT
+.DEFINE PORTB_THD 1<<PORTB_THD_BIT
+.DEFINE PORTB_TRD 1<<PORTB_TRD_BIT
+.DEFINE PORTA_THD 1<<PORTA_THD_BIT
+.DEFINE PORTA_TRD 1<<PORTA_TRD_BIT
+
+; I/O Port $C0: Port A and B
+.DEFINE PORTB_DN_BIT 7 ; PortB DOWN pin input
+.DEFINE PORTB_UP_BIT 6 ; PortB UP pin input
+.DEFINE PORTA_TR_BIT 5 ; PortA TR pin input
+.DEFINE PORTA_TL_BIT 4 ; PortA TL pin input
+.DEFINE PORTA_RT_BIT 3 ; PortA RIGHT pin input
+.DEFINE PORTA_LT_BIT 2 ; PortA LEFT pin input
+.DEFINE PORTA_DN_BIT 1 ; PortA DOWN pin input
+.DEFINE PORTA_UP_BIT 0 ; PortA UP pin input
+
+.DEFINE PORTB_DN 1<<PORTB_DN_BIT
+.DEFINE PORTB_UP 1<<PORTB_UP_BIT
+.DEFINE PORTA_TR 1<<PORTA_TR_BIT
+.DEFINE PORTA_TL 1<<PORTA_TL_BIT
+.DEFINE PORTA_RT 1<<PORTA_RT_BIT
+.DEFINE PORTA_LT 1<<PORTA_LT_BIT
+.DEFINE PORTA_DN 1<<PORTA_DN_BIT
+.DEFINE PORTA_UP 1<<PORTA_UP_BIT
+
+; I/O Port $C1: Port B and Misc
+.DEFINE PORTB_TH_BIT 7 ; PortB TH pin input
+.DEFINE PORTA_TH_BIT 6 ; PortA TH pin input
+.DEFINE RESET_BIT    4 ; RESET button
+.DEFINE PORTB_TR_BIT 3 ; PortB TR pin input
+.DEFINE PORTB_TL_BIT 2 ; PortB TL pin input
+.DEFINE PORTB_RT_BIT 1 ; PortB RIGHT pin input
+.DEFINE PORTB_LT_BIT 0 ; PortB LEFT pin input
+
+.DEFINE PORTB_TH 1<<PORTB_TH_BIT
+.DEFINE PORTA_TH 1<<PORTA_TH_BIT
+.DEFINE RESET    1<<RESET_BIT
+.DEFINE PORTB_TR 1<<PORTB_TR_BIT
+.DEFINE PORTB_TL 1<<PORTB_TL_BIT
+.DEFINE PORTB_RT 1<<PORTB_RT_BIT
+.DEFINE PORTB_LT 1<<PORTB_LT_BIT
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+; SMS VDP Register bits
+.DEFINE VDP_VRAMRD $0000
+.DEFINE VDP_VRAMWR $4000
+.DEFINE VDP_REG    $8000
+.DEFINE VDP_CRAM   $C000
+
+; VDP Status flags
+.DEFINE VDP_INT_BIT 7 ; Frame interrupt pending flag
+.DEFINE VDP_OVR_BIT 6 ; Sprite Overflow flag
+.DEFINE VDP_COL_BIT 5 ; Sprite Collision flag
+
+.DEFINE VDP_INT 1<<VDP_INT_BIT
+.DEFINE VDP_OVR 1<<VDP_OVR_BIT
+.DEFINE VDP_COL 1<<VDP_COL_BIT
+
+; VDP Registers
+.DEFINE VDPREG_MODECTRL1 $8000 ; R0: Mode Control 1
+.DEFINE VDPREG_MODECTRL2 $8180 ; R1: Mode Control 2
+.DEFINE VDPREG_NTBASE    $8200 ; R2: Name Table Base Address
+.DEFINE VDPREG_CRAMBASE  $8300 ; R3: Color Table Base Address
+.DEFINE VDPREG_BPGBASE   $8400 ; R4: Background Pattern Generator Base Address
+.DEFINE VDPREG_OAMBASE   $8500 ; R5: Sprite Attribute Table Base Address
+.DEFINE VDPREG_SPGBASE   $8600 ; R6: Sprite Pattern Generator Base Address
+.DEFINE VDPREG_BGCOLOR   $8700 ; R7: Overscan/Backdrop Color index
+.DEFINE VDPREG_XSCROLL   $8800 ; R8: Background Horizontal Scroll
+.DEFINE VDPREG_YSCROLL   $8900 ; R9: Background Vertical Scroll
+.DEFINE VDPREG_LINECNT   $8A00 ; RA: Line Counter
+
+; Mode Control 1
+.DEFINE VDPM1_FIXTOP_BIT      7 ; (HSI) 1: Disable vertical scrolling for columns 24-31
+.DEFINE VDPM1_FIXRIGHT_BIT    6 ; (VSI) 1: Disable horizontal scrolling for rows 0-1
+.DEFINE VDPM1_MASKBG_BIT      5 ; (LCB) 1: Mask column 0 with overscan color
+.DEFINE VDPM1_IE1_BIT         4 ; (IE1) 1: Line interrupt enable
+.DEFINE VDPM1_EC_BIT          3 ; (SS)  1: Shift sprites left by 8px
+.DEFINE VDPM1_M4_BIT          2 ; (M4)  1: Use Mode 4; 0: Use TMS9918 modes
+.DEFINE VDPM1_M2_BIT          1 ; (M2)  Must be 1 for M1/M3 to set screen height
+.DEFINE VDPM1_SYNCDIS_BIT     0 ; (ES)  1: No sync; 0: Normal display
+
+.DEFINE VDPM1_FIXTOP          1<<VDPM1_FIXTOP_BIT
+.DEFINE VDPM1_FIXRIGHT        1<<VDPM1_FIXRIGHT_BIT
+.DEFINE VDPM1_MASKBG          1<<VDPM1_MASKBG_BIT
+.DEFINE VDPM1_IE1             1<<VDPM1_IE1_BIT
+.DEFINE VDPM1_EC              1<<VDPM1_EC_BIT
+.DEFINE VDPM1_M4              1<<VDPM1_M4_BIT
+.DEFINE VDPM1_M2              1<<VDPM1_M2_BIT
+.DEFINE VDPM1_SYNCDIS         1<<VDPM1_SYNCDIS_BIT
+
+.DEFINE VDPM1_MODE4           VDPREG_MODECTRL1|VDPM1_M4|VDPM1_M2
+
+; Mode Control 2
+.DEFINE VDPM2_DIS_BIT         6 ; (DIS) Display state: 1=enabled, 0=blanked
+.DEFINE VDPM2_IE0_BIT         5 ; (IE0) VBlank interrupt enable
+.DEFINE VDPM2_M1_BIT          4 ; (M1)  224 line mode
+.DEFINE VDPM2_M3_BIT          3 ; (M3)  240 line mode
+.DEFINE VDPM2_LARGESPR_BIT    1 ; (SIZ) Sprite size: 1=16x16 (TMS9918), 8x16 (Mode4); 0=8x8
+.DEFINE VDPM2_SPR2X_BIT       0 ; (MAG) 2x scale sprites
+
+.DEFINE VDPM2_DIS             1<<VDPM2_DIS_BIT
+.DEFINE VDPM2_IE0             1<<VDPM2_IE0_BIT
+.DEFINE VDPM2_M1              1<<VDPM2_M1_BIT
+.DEFINE VDPM2_M3              1<<VDPM2_M3_BIT
+.DEFINE VDPM2_LARGESPR        1<<VDPM2_LARGESPR_BIT
+.DEFINE VDPM2_SPR2X           1<<VDPM2_SPR2X_BIT
+
+.DEFINE VDPM2_ENABLE          VDPREG_MODECTRL2|VDPM2_DIS|VDPM2_IE0
+
+; Nametable base address
+.DEFINE VDP_NTBASE3800 $FF ; preferred
+.DEFINE VDP_NTBASE3000 $FD
+.DEFINE VDP_NTBASE2800 $FB
+.DEFINE VDP_NTBASE2000 $F9
+.DEFINE VDP_NTBASE1800 $F7
+.DEFINE VDP_NTBASE1000 $F5
+.DEFINE VDP_NTBASE0800 $F3
+.DEFINE VDP_NTBASE0000 $F1
+
+; Sprite table base address
+.DEFINE VDP_SATBASE3F00 $FF
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+; SMS PSG
+.DEFINE PSG_TONE1 $80
+.DEFINE PSG_TONE2 $A0
+.DEFINE PSG_TONE3 $C0
+
+.DEFINE PSG_TONE1_VOL   $90
+.DEFINE PSG_TONE2_VOL   $B0
+.DEFINE PSG_TONE3_VOL   $D0
+.DEFINE PSG_NOISE_VOL   $F0
+
+.DEFINE PSG_TONE1_FREQ  $8000
+.DEFINE PSG_TONE2_FREQ  $A000
+.DEFINE PSG_TONE3_FREQ  $C000
+.DEFINE PSG_NOISE_FB    $04
+.DEFINE PSG_NOISE_HIGH  0
+.DEFINE PSG_NOISE_MID   1
+.DEFINE PSG_NOISE_LOW   2
+.DEFINE PSG_NOISE_TONE3 3
+
+.MACRO PSG_TONE ARGS N, FREQ
+	.DB FREQ&$0F|N
+	.DB FREQ&$03F0>>4
+.ENDM
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; Some useful opcodes
+.MACRO clc ; Clear Carry flag
+	and A
+.ENDM
