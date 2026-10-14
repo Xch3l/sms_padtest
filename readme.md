@@ -54,3 +54,5 @@ Assemble `main.asm` with WLA-DX Z80 or use the included "assemble" bat/sh files.
 
 - SMS Power for [the documentation](https://www.smspower.org/Development/Index) on the SMS' VDP, I/O and control pad.
 - SegaRetro for the Genesis' [3 button](https://segaretro.org/Control_Pad_(Mega_Drive)) and [6 button](https://segaretro.org/Six_Button_Control_Pad_(Mega_Drive)) controller protocols.
+
+**No Artificial Intelligence (AI) of any kind was used in the creation of this software and its assets**
